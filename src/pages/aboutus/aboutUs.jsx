@@ -1,14 +1,7 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import Header from "../../components/common/layout/Header.jsx";
-import Lottie from "lottie-react";
-import CategoriesFormations from "../../components/common/CategoriesFormations.jsx";
 import starorange from "../../assets/images/home/starorange.png";
-import etoiles from "../../assets/images/home/5etoiles.png";
-import jiravitrine from "../../assets/images/home/jiravitrine.png";
 import quisommesnous from "../../assets/images/aboutUs/Salle3D.png";
-import reactjsvitrine from "../../assets/images/home/reactjsvitrine.png";
-import springbootvitrine from "../../assets/images/home/springbootvitrine.png";
 import workflowData from "../../assets/json/workflow.json";
 import AboutUsHero from "../../components/aboutUs/AboutUsHero.jsx";
 import "@google/model-viewer";
