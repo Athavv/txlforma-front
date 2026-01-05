@@ -1,8 +1,14 @@
 import axios from "axios";
 import { API_BASE_URL } from "../constants";
 
+if (!API_BASE_URL) {
+  console.error(
+    "⚠️ VITE_API_BASE_URL n'est pas définie. Veuillez configurer la variable d'environnement."
+  );
+}
+
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_BASE_URL || "/api",
   headers: {
     "Content-Type": "application/json",
   },
