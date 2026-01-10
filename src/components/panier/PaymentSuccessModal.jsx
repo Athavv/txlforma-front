@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../constants";
 import illustrationPaiement from "../../assets/images/panier/paiement-confirme.png";
 
 export default function PaymentSuccessModal() {
@@ -17,14 +18,8 @@ export default function PaymentSuccessModal() {
             Nous vous souhaitons une excellente session, riche en découvertes et
             en pratique. <span> 🚀</span> 
           </p>
-
-          {/* <p className="text-sm text-green-600 mb-6 font-medium">
-            ✓ Votre inscription a été confirmée et les participations ont été
-            créées.
-          </p> */}
-
           <button
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate(ROUTES.DASHBOARD)}
             className="bg-gray-900 text-white px-6 py-3 rounded-full font-regular hover:bg-gray-800 transition-colors w-fit"
           >
             Retour au dashboard

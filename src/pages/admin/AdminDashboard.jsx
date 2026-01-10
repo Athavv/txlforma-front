@@ -114,14 +114,12 @@ export default function AdminDashboard() {
     );
   }
 
-  // Calculer les statistiques utilisateurs
   const totalUsers = users.filter((user) => user.role === "USER").length;
   const totalFormateurs = users.filter(
     (user) => user.role === "FORMATEUR"
   ).length;
   const totalAdmins = users.filter((user) => user.role === "ADMIN").length;
 
-  // Sessions à venir
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const upcomingSessions = sessions.filter((session) => {
@@ -129,7 +127,6 @@ export default function AdminDashboard() {
     return sessionDate >= today;
   }).length;
 
-  // Moyenne générale des sessions
   const averageScore =
     notes.length > 0
       ? (
@@ -137,12 +134,10 @@ export default function AdminDashboard() {
         ).toFixed(1)
       : "0.0";
 
-  // Paiements en attente (données réelles)
   const pendingPayments = payments.filter(
     (payment) => payment.status === "PENDING"
   ).length;
 
-  // Calculer le CA réel à partir des paiements réussis
   const calculatedRevenue = payments
     .filter(
       (payment) =>
@@ -150,13 +145,10 @@ export default function AdminDashboard() {
     )
     .reduce((sum, payment) => sum + (payment.amount || 0), 0);
 
-  // Utiliser le CA de l'API ou celui calculé
   const totalRevenue = stats?.totalRevenue || calculatedRevenue;
 
-  // Utiliser le taux de réussite de l'API (calculé correctement côté backend)
   const successRate = stats?.successRate || 0;
 
-  // Utilisateurs récents (7 derniers)
   const recentUsers = [...users]
     .sort(
       (userA, userB) =>
@@ -165,7 +157,6 @@ export default function AdminDashboard() {
     )
     .slice(0, 7);
 
-  // Formations par catégorie
   const categoryCounts = {};
   formations.forEach((formation) => {
     const categoryId = formation.category?.id || formation.categoryId;
@@ -214,11 +205,9 @@ export default function AdminDashboard() {
     },
   ];
 
-  // Données pour le graphique de revenus (données réelles par mois)
   const getRevenueByMonth = () => {
     const monthData = [0, 0, 0, 0, 0, 0];
 
-    // Calculer les revenus par mois à partir des paiements réussis
     const successfulPayments = payments.filter(
       (payment) => payment.status === "SUCCEEDED"
     );
@@ -231,11 +220,9 @@ export default function AdminDashboard() {
           (now.getFullYear() - paymentDate.getFullYear()) * 12 +
           (now.getMonth() - paymentDate.getMonth());
 
-        // Si le paiement est dans les 6 derniers mois
         if (monthsDiff >= 0 && monthsDiff < 6) {
-          const index = 5 - monthsDiff; // 0 = il y a 5 mois, 5 = ce mois
+          const index = 5 - monthsDiff;
           if (index >= 0 && index < 6) {
-            // Les montants sont déjà en euros
             monthData[index] += payment.amount || 0;
           }
         }
@@ -287,7 +274,6 @@ export default function AdminDashboard() {
     },
   };
 
-  // Données pour le graphique des utilisateurs (donut)
   const usersData = {
     labels: ["User", "Formateur", "Administrateur"],
     datasets: [
@@ -316,7 +302,6 @@ export default function AdminDashboard() {
     },
   };
 
-  // Données pour le graphique des formations par catégorie (pie chart)
   const categoryColors = [
     "#FF4F01",
     "#D3F26A",
@@ -351,7 +336,6 @@ export default function AdminDashboard() {
         <h1 className="text-4xl font-semibold text-noir mb-2">Tableau de bord</h1>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((card, index) => {
           const Icon = card.icon;
@@ -376,9 +360,7 @@ export default function AdminDashboard() {
         })}
       </div>
 
-      {/* Charts Section - Same Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Revenue Chart */}
         <div className="bg-blanc rounded-2xl p-6">
           <h3 className="text-xl font-regular text-noir mb-4">
             Chiffre d'affaire
@@ -397,7 +379,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Users Chart */}
         <div className="bg-blanc rounded-2xl p-6">
           <h3 className="text-xl font-regular text-noir mb-4">
             Nombre d'utilisateur total
@@ -428,7 +409,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Training by Category Chart */}
         <div className="bg-noir rounded-2xl p-6 shadow-sm">
           <h3 className="text-xl font-semibold text-blanc mb-2">
             Formation par catégorie
@@ -440,9 +420,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Bottom Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Side: Recent Activities below Revenue and Users */}
         <div className="lg:col-span-2 bg-blanc rounded-2xl p-6">
           <h3 className="text-xl font-semibold text-noir mb-2">
             Activités récentes
@@ -503,9 +481,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Right Side: Additional Cards below Category Chart */}
         <div className="space-y-6">
-          {/* Upcoming Sessions */}
           <div className="bg-orange rounded-2xl p-6 shadow-sm">
             <h3 className="text-lg font-regular text-noir mb-2">
               Nombre de sessions à venir
@@ -515,7 +491,6 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Average Session Score */}
           <div className="bg-vert rounded-2xl p-6 shadow-sm">
             <h3 className="text-lg font-regular text-noir mb-2">
               Moyenne générales des sessions
@@ -525,7 +500,6 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Pending Payments */}
           <div className="bg-violet rounded-2xl p-6 shadow-sm">
             <h3 className="text-lg font-regular text-noir mb-2">
               Paiements en attentes

@@ -1,4 +1,5 @@
 import { Users, User } from "lucide-react";
+import { getImageUrl } from "../../../../utils/imageUtils";
 
 export default function SessionParticipantsSection({
   session,
@@ -45,9 +46,17 @@ export default function SessionParticipantsSection({
                 >
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <User className="h-4 w-4 text-gray-500" />
-                      </div>
+                      {participant.userImageUrl ? (
+                        <img
+                          src={getImageUrl(participant.userImageUrl)}
+                          alt={participant.userName}
+                          className="h-8 w-8 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                          <User className="h-4 w-4 text-gray-500" />
+                        </div>
+                      )}
                       <span className="text-sm font-medium text-noir">
                         {participant.userName}
                       </span>

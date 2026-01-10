@@ -11,7 +11,7 @@ export default function PanierContent({
   onProceedToPayment,
 }) {
   return (
-    <div className="grid grid-cols-12 gap-16 w-full">
+    <div className="grid grid-cols-12 md:gap-16 gap-0   md:w-full">
       <div className="col-span-12 lg:col-span-7 pr-0 lg:pr-10">
         <p className="text-gray-700 mb-6">
           Quantité de sessions: {sessions.length}

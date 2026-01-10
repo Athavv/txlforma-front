@@ -22,21 +22,37 @@ async function login(email, password) {
       },
     };
   } catch (error) {
+    const status = error.response?.status;
+    const message = error.response?.data?.message;
+
+    if (status === 401 || status === 403) {
+      return {
+        success: false,
+        error: message || "Erreur dans le login ou le mot de passe",
+      };
+    }
+
     return {
       success: false,
-      error: error.response?.data?.message || "Erreur lors de la connexion",
+      error: message || "Erreur lors de la connexion",
     };
   }
 }
 
 async function register(data) {
   try {
-    await api.post("/auth/register", {
+    const registerData = {
       firstname: data.firstname,
       lastname: data.lastname,
       email: data.email,
       password: data.password,
-    });
+    };
+
+    if (data.imageUrl) {
+      registerData.imageUrl = data.imageUrl;
+    }
+
+    await api.post("/auth/register", registerData);
     return { success: true };
   } catch (error) {
     return {

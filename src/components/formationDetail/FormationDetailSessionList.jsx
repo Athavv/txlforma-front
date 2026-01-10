@@ -22,9 +22,23 @@ export default function FormationDetailSessionList({
     );
   }
 
+  const todayDateOnly = new Date();
+  todayDateOnly.setHours(0, 0, 0, 0); 
+
+  const upcomingSessions = sessions
+    .filter(session => {
+      const sessionDate = new Date(session.startDate);
+      return sessionDate >= todayDateOnly;
+    })
+    .sort((sessionA, sessionB) => {
+      const dateA = new Date(sessionA.startDate + ' ' + sessionA.startTime);
+      const dateB = new Date(sessionB.startDate + ' ' + sessionB.startTime);
+      return dateA - dateB;
+    });
+
   return (
     <div className="space-y-4">
-      {sessions.map((session) => (
+      {upcomingSessions.map((session) => (
         <div
           key={session.id}
           className={`px-8 p-4 flex items-center justify-between gap-4 border-b border-gray-200 ${

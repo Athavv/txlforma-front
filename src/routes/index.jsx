@@ -10,12 +10,20 @@ import SessionsPage from "../pages/admin/SessionsPage.jsx";
 import SessionDetailPage from "../pages/admin/SessionDetailPage.jsx";
 import CategoriesPage from "../pages/admin/CategoriesPage.jsx";
 import FormateurDashboard from "../pages/formateur/FormateurDashboard.jsx";
+import SessionsPageFormateur from "../pages/formateur/SessionPageFormateur.jsx";
+import SessionDetailFormateur from "../pages/formateur/SessionDetailFormateur.jsx";
 import UserDashboard from "../pages/user/UserDashboard.jsx";
+import SessionsPassees from "../pages/user/SessionsPassees.jsx";
+import Attestations from "../pages/user/Attestations.jsx";
+import Emargement from "../pages/emargement/Emargement.jsx";
+import SessionDetailPageUser from "../pages/user/SessionDetailPageUser.jsx";
 import CataloguePage from "../pages/catalogue/CataloguePage.jsx";
 import FormationDetailPage from "../pages/catalogue/FormationDetailPage.jsx";
 import PanierPage from "../pages/panier/PanierPage.jsx";
+import ConfidentialitePage from "../pages/confidentialite/ConfidentialitePage.jsx";
 import PrivateRoute from "../components/common/PrivateRoute.jsx";
 import ErrorPage from "../pages/error/ErrorPage.jsx";
+
 import { authService } from "../api/auth.service";
 import { ROUTES, ROLES } from "../constants";
 import AboutUsPage from "../pages/aboutus/aboutUs.jsx";
@@ -50,6 +58,7 @@ export function AppRoutes() {
       <Route path={ROUTES.HOME} element={<Home />} />
       <Route path={ROUTES.CATALOGUE} element={<CataloguePage />} />
       <Route path={ROUTES.FORMATION_DETAIL} element={<FormationDetailPage />} />
+      <Route path={ROUTES.CONFIDENTIALITE} element={<ConfidentialitePage />} />
       <Route path={ROUTES.ABOUT_US} element={<AboutUsPage />} />
 
       {/* ========== PROTECTED ROUTES - USER ========== */}
@@ -62,8 +71,20 @@ export function AppRoutes() {
         }
       >
         <Route index element={<UserDashboard />} />
-        <Route path="formations" element={<UserDashboard />} />
+        <Route path="sessions-passees" element={<SessionsPassees />} />
+        <Route path="attestations" element={<Attestations />} />
+        <Route path="session/:id" element={<SessionDetailPageUser />} />
+
       </Route>
+    <Route 
+    path="/emargement/:participationId" 
+    element={ 
+    <PrivateRoute> 
+      <Emargement /> 
+      </PrivateRoute> 
+    } 
+    />
+
       <Route
         path={ROUTES.PANIER}
         element={
@@ -83,8 +104,8 @@ export function AppRoutes() {
         }
       >
         <Route index element={<FormateurDashboard />} />
-        <Route path="sessions" element={<FormateurDashboard />} />
-        <Route path="formations" element={<FormateurDashboard />} />
+        <Route path="sessions" element={<SessionsPageFormateur />} />
+        <Route path="sessions/:id" element={<SessionDetailFormateur />} />
       </Route>
 
       {/* ========== PROTECTED ROUTES - ADMIN ========== */}

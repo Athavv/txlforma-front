@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { categoryService } from "../../api/category.service";
 import { formationService } from "../../api/formation.service";
 import { getImageUrl } from "../../utils/imageUtils";
+import { ROUTES } from "../../constants";
 import rectangleorange from "../../assets/images/home/rectangleorange.png";
 import staticcatagories from "../../assets/images/home/staticcatagories.png";
 
@@ -71,9 +73,11 @@ export default function CategoriesFormations() {
                 ))}
               </div>
             </div>
-            <button className="py-1 text-sm mt-3 rounded underline hover:text-gray-500">
-              En savoir +
-            </button>
+            <Link to={ROUTES.CATALOGUE}>
+              <button className="py-1 text-sm mt-3 rounded underline hover:text-gray-500">
+                En savoir +
+              </button>
+            </Link>
           </div>
         );
       })}

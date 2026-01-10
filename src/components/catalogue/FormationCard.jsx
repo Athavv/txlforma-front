@@ -5,7 +5,6 @@ import { ROUTES } from "../../constants";
 export default function FormationCard({ formation }) {
   return (
     <div className="flex-shrink-0 w-[28rem] bg-white rounded-xl p-6">
-      {/* Image */}
       {formation.imageUrl ? (
         <img
           src={getImageUrl(formation.imageUrl)}
@@ -17,13 +16,9 @@ export default function FormationCard({ formation }) {
           Pas d'image
         </div>
       )}
-
-      {/* Titre */}
       <h3 className="text-[24px] font-semibold text-gray-900 mb-2">
         {formation.title}
       </h3>
-
-      {/* Description */}
       <div className="relative pl-4">
         <span className="absolute left-0 h-full w-[4px] bg-vert rounded-full"></span>
         <p className="text-sm text-gray-700 mb-4">
@@ -34,10 +29,6 @@ export default function FormationCard({ formation }) {
             .join(" ") + " ..."}
         </p>
       </div>
-
-
-
-      {/* Lien "En savoir plus" */}
       <Link
         to={ROUTES.FORMATION_DETAIL.replace(":id", formation.id)}
         className="relative inline-block text-sm text-gray-900 group"
@@ -45,8 +36,6 @@ export default function FormationCard({ formation }) {
         En savoir plus +
         <span className="absolute left-0 bottom-[-4px] w-full h-[4px] rounded-full bg-vert transition-colors group-hover:bg-violet"></span>
       </Link>
-
-
     </div>
   );
 }

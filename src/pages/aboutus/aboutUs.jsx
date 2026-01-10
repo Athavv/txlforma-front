@@ -1,18 +1,12 @@
-import { useState, useEffect } from "react";
 import Header from "../../components/common/layout/Header.jsx";
+import Footer from "../../components/common/layout/Footer.jsx";
 import starorange from "../../assets/images/home/starorange.png";
-import quisommesnous from "../../assets/images/aboutUs/Salle3D.png";
-import workflowData from "../../assets/json/workflow.json";
+import quisommesnous from "../../assets/images/aboutUs/Salledeclasse.jpg";
 import AboutUsHero from "../../components/aboutUs/AboutUsHero.jsx";
-import "@google/model-viewer";
+import Scene3D from "../../components/aboutUs/Scene3D.jsx";
+import M from "../../assets/3D/M.glb";
 
 export default function AboutUs() {
-  const [animationData, setAnimationData] = useState(null);
-
-  useEffect(() => {
-    setAnimationData(workflowData);
-  }, []);
-
   return (
     <div className="min-h-screen bg-beige">
       <Header />
@@ -29,8 +23,8 @@ export default function AboutUs() {
             <img src={starorange} alt="star" className="w-8 h-8" />
           </div>
           <p className="mt-3 text-xl">
-            TXLFORMA est un centre de formation spécialisé dans les métiers du
-            numérique et des nouvelles technologies.
+            L'espace où les talents du numérique prennent vie. Propulsé par
+            TXLFORMA.
           </p>
         </div>
 
@@ -53,7 +47,7 @@ export default function AboutUs() {
               professionnel, épuré et hautement technologique.
             </p>
           </div>
-          <div className="md:col-span-5 pd-3 md:p-6">
+          <div className="md:col-span-5 p-3 md:p-6">
             <img
               src={quisommesnous}
               alt="Aperçu salle"
@@ -63,25 +57,12 @@ export default function AboutUs() {
         </div>
       </div>
 
-      {/* Modif 2 : Utilisation correcte du viewer avec la variable MaScene3D */}
-      <div className="w-full h-[500px] bg-white/50 border-y border-orange-200">
-        <model-viewer
-          src={MaScene3D}
-          ar
-          camera-controls
-          touch-action="pan-y"
-          /* POSITION DE LA CAMÉRA */
-          camera-orbit="0deg 75deg 2m" /* Angle et distance (2m pour être au centre) */
-          field-of-view="75deg" /* Grand angle pour l'immersion */
-          min-camera-orbit="auto auto 0m" /* Permet de zoomer jusqu'à 0m (intérieur) */
-          /* ÉCLAIRAGE (pour éviter l'effet aveuglant) */
-          environment-intensity="0.7"
-          exposure="0"
-          style={{ width: "100%", height: "600px", backgroundColor: "#2c3e50" }}
-        >
-          {/* Optionnel : Masquer les faces arrière des murs pour voir à travers quand on est dehors */}
-        </model-viewer>
+      <div className="container mx-auto px-5">
+        <div className="w-full rounded-3xl overflow-hidden border-2 border-orange-200/30 shadow-2xl">
+          <Scene3D modelUrl={M} height="800px" />
+        </div>
       </div>
+      <Footer />
     </div>
   );
 }

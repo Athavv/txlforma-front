@@ -1,4 +1,5 @@
 import { Users, User } from "lucide-react";
+import { getImageUrl } from "../../../../utils/imageUtils";
 
 export default function SessionEmargementsSection({
   session,
@@ -39,16 +40,21 @@ export default function SessionEmargementsSection({
           <tbody>
             {participants.map((participant) => {
               const participantData = participantsMap[participant.participationId];
+              const isSessionFinished = session.endDate && new Date(session.endDate) < new Date();
               const status = participantData?.hasSigned
                 ? "ÉMARGÉ"
-                : participant.status === "PAYE"
+                : participant.status === "PAYE" && !isSessionFinished
                 ? "EN ATTENTE"
+                : participant.status === "PAYE" && isSessionFinished
+                ? "ABSENT"
                 : "NON ÉMARGÉ";
               const statusColor =
                 status === "ÉMARGÉ"
-                  ? "bg-vert/20 text-vert"
+                  ? "bg-vert text-noir"
                   : status === "EN ATTENTE"
                   ? "bg-gray-200 text-gray-700"
+                  : status === "ABSENT"
+                  ? "bg-orange/20 text-orange"
                   : "bg-orange/20 text-orange";
 
               return (
@@ -58,9 +64,17 @@ export default function SessionEmargementsSection({
                 >
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-beige2 flex items-center justify-center">
-                        <User className="h-4 w-4 text-gray-500" />
-                      </div>
+                      {participant.userImageUrl ? (
+                        <img
+                          src={getImageUrl(participant.userImageUrl)}
+                          alt={participant.userName}
+                          className="h-8 w-8 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="h-8 w-8 rounded-full bg-beige2 flex items-center justify-center">
+                          <User className="h-4 w-4 text-gray-500" />
+                        </div>
+                      )}
                       <span className="text-sm font-medium text-noir">
                         {participant.userName}
                       </span>
@@ -87,5 +101,3 @@ export default function SessionEmargementsSection({
     </div>
   );
 }
-
-

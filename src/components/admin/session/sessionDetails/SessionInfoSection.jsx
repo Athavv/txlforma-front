@@ -1,10 +1,14 @@
 import { Calendar, Users, MapPin, User } from "lucide-react";
 
-export default function SessionInfoSection({ session, participants }) {
+export default function SessionInfoSection({
+  session,
+  participants,
+  showParticipants = true,
+}) {
   return (
     <div className="rounded-2xl p-6 relative">
       <div className="flex items-start justify-between mb-4">
-        <h2 className="text-2xl font-medium text-noir">Informations générales</h2>
+        <h2 className="text-lg sm:text-xl lg:text-2xl font-medium text-noir">Informations générales</h2>
       </div>
       <div className="space-y-4">
         <div className="flex items-start gap-4">
@@ -21,15 +25,17 @@ export default function SessionInfoSection({ session, participants }) {
             </p>
           </div>
         </div>
-        <div className="flex items-start gap-4">
-          <Users className="h-6 w-6 text-noir mt-1" />
-          <div>
-            <p className="text-sm text-gray-600">Nombre de participants</p>
-            <p className="text-[18px] font-regular text-noir">
-              {participants.length}/{session.capacity}
-            </p>
+        {showParticipants && (
+          <div className="flex items-start gap-4">
+            <Users className="h-6 w-6 text-noir mt-1" />
+            <div>
+              <p className="text-sm text-gray-600">Nombre de participants</p>
+              <p className="text-[18px] font-regular text-noir">
+                {participants.length}/{session.capacity}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
         <div className="flex items-start gap-4">
           <MapPin className="h-6 w-6 text-noir mt-1" />
           <div>
@@ -50,7 +56,9 @@ export default function SessionInfoSection({ session, participants }) {
         </div>
         {session.formation?.description && (
           <div className="mt-6">
-            <h2 className="text-[24px] mt-8 font-medium">Description de la session</h2>
+            <h2 className="text-[24px] mt-8 font-medium">
+              Description de la session
+            </h2>
             <p className="mt-4 font-regular">{session.formation.description}</p>
           </div>
         )}
@@ -58,6 +66,4 @@ export default function SessionInfoSection({ session, participants }) {
     </div>
   );
 }
-
-
 

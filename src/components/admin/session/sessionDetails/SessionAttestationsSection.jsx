@@ -1,4 +1,5 @@
 import { Users, User, Download, X } from "lucide-react";
+import { getImageUrl } from "../../../../utils/imageUtils";
 
 export default function SessionAttestationsSection({
   session,
@@ -65,9 +66,17 @@ export default function SessionAttestationsSection({
                 >
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <User className="h-4 w-4 text-gray-500" />
-                      </div>
+                      {participant.userImageUrl ? (
+                        <img
+                          src={getImageUrl(participant.userImageUrl)}
+                          alt={participant.userName}
+                          className="h-8 w-8 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                          <User className="h-4 w-4 text-gray-500" />
+                        </div>
+                      )}
                       <span className="text-sm font-medium text-noir">
                         {participant.userName}
                       </span>
@@ -79,15 +88,19 @@ export default function SessionAttestationsSection({
                         onClick={() =>
                           onDownloadAttestation(presenceAttestation.id)
                         }
-                        className="px-3 py-1 bg-vert text-white rounded-full text-xs font-semibold flex items-center gap-1 hover:bg-vert/90"
+                        className="px-4 py-2 bg-vert text-noir rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-vert/90 transition-colors"
                       >
-                        <Download className="h-3 w-3" />
                         Disponible
+                        <div className="w-5 h-5 rounded-full bg-noir flex items-center justify-center">
+                          <Download className="h-3 w-3 text-blanc" />
+                        </div>
                       </button>
                     ) : (
-                      <span className="px-3 py-1 bg-orange/20 text-orange rounded-full text-xs font-semibold flex items-center gap-1">
-                        <X className="h-3 w-3" />
+                      <span className="px-4 py-2 bg-orange text-noir rounded-full text-sm font-semibold flex items-center gap-2 inline-block">
                         Indisponible
+                        <div className="w-5 h-5 rounded-full bg-noir flex items-center justify-center">
+                          <X className="h-3 w-3 text-blanc" />
+                        </div>
                       </span>
                     )}
                   </td>
@@ -97,15 +110,19 @@ export default function SessionAttestationsSection({
                         onClick={() =>
                           onDownloadAttestation(successAttestation.id)
                         }
-                        className="px-3 py-1 bg-vert text-white rounded-full text-xs font-semibold flex items-center gap-1 hover:bg-vert/90"
+                        className="px-4 py-2 bg-vert text-noir rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-vert/90 transition-colors"
                       >
-                        <Download className="h-3 w-3" />
                         Disponible
+                        <div className="w-5 h-5 rounded-full bg-noir flex items-center justify-center">
+                          <Download className="h-3 w-3 text-blanc" />
+                        </div>
                       </button>
                     ) : (
-                      <span className="px-3 py-1 bg-orange/20 text-orange rounded-full text-xs font-semibold flex items-center gap-1">
-                        <X className="h-3 w-3" />
+                      <span className="px-4 py-2 bg-orange text-noir rounded-full text-sm font-semibold flex items-center gap-2 inline-block">
                         Indisponible
+                        <div className="w-5 h-5 rounded-full bg-noir flex items-center justify-center">
+                          <X className="h-3 w-3 text-blanc" />
+                        </div>
                       </span>
                     )}
                   </td>
@@ -125,5 +142,3 @@ export default function SessionAttestationsSection({
     </div>
   );
 }
-
-

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Home, AlertCircle, ArrowLeft } from "lucide-react";
 import Header from "../../components/common/layout/Header.jsx";
+import Footer from "../../components/common/layout/Footer.jsx";
 import starorange from "../../assets/images/home/starorange.png";
 
 function ErrorPage() {
@@ -64,6 +65,7 @@ function ErrorPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

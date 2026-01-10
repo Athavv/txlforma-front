@@ -14,15 +14,12 @@ export default function FormationDetailCalendar({
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
 
-    // Ajuster pour que lundi soit le premier jour (0 = lundi)
     const adjustedStartingDay = (startingDayOfWeek + 6) % 7;
 
     const days = [];
-    // Ajouter les jours vides du début
     for (let dayIndex = 0; dayIndex < adjustedStartingDay; dayIndex++) {
       days.push(null);
     }
-    // Ajouter les jours du mois
     for (let dayIndex = 1; dayIndex <= daysInMonth; dayIndex++) {
       days.push(dayIndex);
     }

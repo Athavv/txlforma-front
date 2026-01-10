@@ -1,15 +1,13 @@
 import { useState, useEffect } from "react";
 import Lottie from "lottie-react";
-import { Clock, BookOpen, ShoppingCart } from "lucide-react";
-import catalogData from "../../assets/json/catalog.json";
+import workflowData from "../../assets/json/catalog.json";
 import starorange from "../../assets/images/home/starorange.png";
-import etoiles from "../../assets/images/home/5etoiles.png";
 
-export default function CatalogueHero({ totalCategories, totalFormations }) {
+export default function AboutUsHero() {
   const [animationData, setAnimationData] = useState(null);
 
   useEffect(() => {
-    setAnimationData(catalogData);
+    setAnimationData(workflowData);
   }, []);
 
   return (

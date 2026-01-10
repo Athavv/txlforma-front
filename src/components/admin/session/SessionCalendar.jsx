@@ -18,14 +18,12 @@ export default function SessionCalendar({
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    // Convert Sunday (0) to 7, then adjust for Monday start (Monday = 1)
     let startingDayOfWeek = firstDay.getDay();
-    startingDayOfWeek = startingDayOfWeek === 0 ? 7 : startingDayOfWeek; // Sunday becomes 7
-    startingDayOfWeek = startingDayOfWeek - 1; // Monday = 0, Sunday = 6
+    startingDayOfWeek = startingDayOfWeek === 0 ? 7 : startingDayOfWeek;
+    startingDayOfWeek = startingDayOfWeek - 1;
 
     const days = [];
 
-    // Add previous month days
     const prevMonth = month === 0 ? 11 : month - 1;
     const prevYear = month === 0 ? year - 1 : year;
     const prevMonthLastDay = new Date(prevYear, prevMonth + 1, 0).getDate();
@@ -38,7 +36,6 @@ export default function SessionCalendar({
       });
     }
 
-    // Add current month days
     for (let dayIndex = 1; dayIndex <= daysInMonth; dayIndex++) {
       days.push({
         date: new Date(year, month, dayIndex),
@@ -46,7 +43,6 @@ export default function SessionCalendar({
       });
     }
 
-    // Fill remaining cells to make 42 cells (7 columns × 6 rows)
     const remainingCells = 42 - days.length;
     const nextMonth = month === 11 ? 0 : month + 1;
     const nextYear = month === 11 ? year + 1 : year;
@@ -72,22 +68,26 @@ export default function SessionCalendar({
     });
   };
 
-  const getCategoryName = (session) => {
+  const getFormationName = (session) => {
     return (
-      session.formation?.category?.name ||
-      session.category?.name ||
-      session.categoryName ||
-      ""
+      session.formation?.title ||
+      session.formationTitle ||
+      "Session"
     );
   };
 
-  const handleSessionClick = (session, event) => {
-    event.stopPropagation();
+  const formatTime = (timeString) => {
+    if (!timeString) return "";
+    return timeString.substring(0, 5);
+  };
+
+  const handleSessionClick = (session, clickEvent) => {
+    clickEvent.stopPropagation();
     navigate(`/admin/sessions/${session.id}`);
   };
 
-  const handleAddClick = (date, event) => {
-    event.stopPropagation();
+  const handleAddClick = (date, clickEvent) => {
+    clickEvent.stopPropagation();
     if (onAddSession) {
       const dateStr = formatDateLocal(date);
       onAddSession(dateStr);
@@ -124,7 +124,6 @@ export default function SessionCalendar({
 
   return (
     <div className="w-full p-5">
-      {/* Month Header */}
       <div className="flex items-center gap-4 mb-4">
         <h3 className="text-lg font-semibold text-noir">
           {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
@@ -172,10 +171,8 @@ export default function SessionCalendar({
         </div>
       </div>
 
-      {/* Calendar Grid */}
       <div>
         <div className="grid grid-cols-7">
-          {/* Day Headers */}
           {["Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam.", "Dim."].map(
             (day) => (
               <div
@@ -187,7 +184,6 @@ export default function SessionCalendar({
             )
           )}
 
-          {/* Calendar Days */}
           {calendarDays.map((dayObj, idx) => {
             const { date, isCurrentMonth } = dayObj;
             const sessionsForDay = getSessionsForDate(date);
@@ -219,21 +215,30 @@ export default function SessionCalendar({
                   </button>
                 </div>
 
-                {/* Sessions */}
                 <div className="flex flex-col gap-1 mt-auto items-start">
                   {sessionsForDay.map((session) => {
-                    const categoryName = getCategoryName(session);
+                    const formationName = getFormationName(session);
+                    const categoryName = session.formation?.category?.name ||
+                      session.category?.name ||
+                      session.categoryName ||
+                      "";
                     const colorClass = getCategoryColor
                       ? getCategoryColor(categoryName)
                       : "bg-vert text-noir";
+                    const startTime = formatTime(session.startTime);
+                    const endTime = formatTime(session.endTime);
+                    const sessionTime = startTime && endTime ? `${startTime} - ${endTime}` : startTime || endTime || "";
 
                     return (
                       <div
                         key={session.id}
                         onClick={(e) => handleSessionClick(session, e)}
-                        className={`w-[75%] px-2 py-1 rounded text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity ${colorClass}`}
+                        className={`w-[85%] px-2 py-1 rounded text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-between ${colorClass}`}
                       >
-                        {categoryName || "Session"}
+                        <span className="flex-1 truncate">{formationName}</span>
+                        {sessionTime && (
+                          <span className="ml-2 text-xs opacity-90 whitespace-nowrap">{sessionTime}</span>
+                        )}
                       </div>
                     );
                   })}

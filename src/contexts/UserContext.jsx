@@ -15,7 +15,6 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Charger l'utilisateur au démarrage
   useEffect(() => {
     if (authService.isAuthenticated()) {
       const currentUser = authService.getCurrentUser();

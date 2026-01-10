@@ -1,24 +1,24 @@
 export const formatDate = (dateString) => {
   if (!dateString) return "";
   const date = new Date(dateString);
-  const months = [
-    "Jan",
-    "Fév",
-    "Mar",
-    "Avr",
-    "Mai",
-    "Jun",
-    "Jul",
-    "Aoû",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Déc",
-  ];
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-  return `${day} ${month}. ${year}, ${hours}:${minutes}`;
+  return date.toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+export const formatDateShort = (dateString, timeString) => {
+  if (!dateString) return "";
+  const date = new Date(`${dateString}T${timeString || "00:00"}`);
+  const formatted = date.toLocaleDateString("fr-FR", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  return formatted.replace(/\s+/g, " ").trim();
 };

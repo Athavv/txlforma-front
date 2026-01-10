@@ -21,6 +21,7 @@ export default function SessionDetailPage() {
 
   useEffect(() => {
     loadSessionData();
+    window.scrollTo(0, 0);
   }, [id]);
 
   const loadSessionData = async () => {
@@ -34,11 +35,9 @@ export default function SessionDetailPage() {
       setSession(sessionRes.data);
       setSessionDetails(detailsRes.data);
 
-      // Extraire les données des participants depuis detailsRes
       const participantsData = detailsRes.data.participants || [];
       setParticipants(participantsData);
 
-      // Extraire les attestations depuis les participants
       const attestationsData = [];
       participantsData.forEach((participant) => {
         if (
@@ -55,7 +54,6 @@ export default function SessionDetailPage() {
       });
       setAttestations(attestationsData);
     } catch (error) {
-      // Erreur lors du chargement des données
     } finally {
       setLoading(false);
     }
@@ -120,7 +118,6 @@ export default function SessionDetailPage() {
     (attestation) => attestation.type === "PRESENCE"
   ).length;
 
-  // Créer un map pour associer les données
   const participantsMap = {};
   participants.forEach((participant) => {
     participantsMap[participant.participationId] = {
@@ -188,13 +185,11 @@ export default function SessionDetailPage() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content */}
         <div className="lg:col-span-2 space-y-6 border-r border-gray-200 pr-6">
           <SessionDetailHeader session={session} onEdit={handleEdit} />
           <div>{renderActiveSection()}</div>
         </div>
 
-        {/* Sidebar */}
         <SessionDetailSidebar
           activeSection={activeSection}
           setActiveSection={setActiveSection}

@@ -43,7 +43,7 @@ export default function SessionsPage() {
       formateursResult,
       categoriesResult,
     ] = await Promise.all([
-      sessionService.getAllSessions(),
+      sessionService.getAllSessions({ includePast: true }),
       formationService.getAllFormations(),
       sessionService.getFormateurs(),
       categoryService.getAllCategories(),
@@ -78,8 +78,8 @@ export default function SessionsPage() {
     setShowForm(true);
   };
 
-  const handleEdit = (session, event) => {
-    if (event) event.stopPropagation();
+  const handleEdit = (session, clickEvent) => {
+    if (clickEvent) clickEvent.stopPropagation();
     setEditingSession(session);
     setSelectedDate(null);
     setShowForm(true);

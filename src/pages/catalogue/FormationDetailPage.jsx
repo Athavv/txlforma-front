@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState, useCallback } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Header from "../../components/common/layout/Header";
+import Footer from "../../components/common/layout/Footer";
 import FormationDetailHeader from "../../components/formationDetail/FormationDetailHeader";
 import FormationDetailCalendar from "../../components/formationDetail/FormationDetailCalendar";
 import FormationDetailSessionList from "../../components/formationDetail/FormationDetailSessionList";
@@ -13,10 +14,10 @@ import { authService } from "../../api/auth.service";
 import { ROUTES, ROLES } from "../../constants";
 import { Link } from "react-router-dom";
 
-
 export default function FormationDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [formation, setFormation] = useState(null);
   const [relatedFormations, setRelatedFormations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,43 +27,55 @@ export default function FormationDetailPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [panierLoading, setPanierLoading] = useState(true);
 
-  useEffect(() => {
-    if (id) {
-      loadFormation();
-      loadSessions();
-      if (authService.isAuthenticated()) {
-        loadPanierItems();
-        loadPaidSessions();
-      } else {
-        setPanierLoading(false);
-      }
-    }
-  }, [id]);
-
-  useEffect(() => {
-    if (formation) {
-      loadRelatedFormations();
-    }
-  }, [formation]);
-
-  const loadFormation = async () => {
+  const loadFormation = useCallback(async () => {
     const result = await formationService.getFormationById(id);
     if (result.success) {
       setFormation(result.data);
     }
-  };
+  }, [id]);
 
-  const loadSessions = async () => {
+  const loadSessions = useCallback(async () => {
     setLoading(true);
     const result = await sessionService.getSessionsByFormation(id);
     if (result.success) {
-      loadSessionsStats(result.data);
+      await loadSessionsStats(result.data);
     }
     setLoading(false);
-  };
+  }, [id]);
 
-  const loadRelatedFormations = async () => {
-    if (!formation || !formation.category) return;
+  const loadSessionsStats = useCallback(async (sessions) => {
+    const statsPromises = sessions.map(async (session) => {
+      let participationsCount = 0;
+
+      try {
+        const result = await participationService.getParticipationsBySession(session.id);
+        if (result.success) {
+          if (result.data.count !== undefined) {
+            participationsCount = result.data.count;
+          } else if (Array.isArray(result.data)) {
+            participationsCount = result.data.length;
+          }
+        }
+      } catch {
+        participationsCount = 0;
+      }
+
+      const remainingPlaces = session.capacity - participationsCount;
+
+      return {
+        ...session,
+        remainingPlaces,
+        isFull: remainingPlaces <= 0,
+        participationsCount,
+      };
+    });
+
+    const stats = await Promise.all(statsPromises);
+    setSessionsWithStats(stats);
+  }, []);
+
+  const loadRelatedFormations = useCallback(async () => {
+    if (!formation?.category) return;
 
     const result = await formationService.getAllFormations();
     if (result.success) {
@@ -73,57 +86,9 @@ export default function FormationDetailPage() {
       );
       setRelatedFormations(related);
     }
-  };
+  }, [formation, id]);
 
-  const loadSessionsStats = async (sessionsList) => {
-    const isAuthenticated = authService.isAuthenticated();
-    const userRole = authService.getRole();
-    const canAccessParticipations =
-      isAuthenticated &&
-      (userRole === ROLES.ADMIN || userRole === ROLES.FORMATEUR);
-
-    const statsPromises = sessionsList.map(async (session) => {
-      let participationsCount = 0;
-
-      if (canAccessParticipations) {
-        try {
-          const participationsResult =
-            await participationService.getParticipationsBySession(session.id);
-          if (participationsResult.success) {
-            participationsCount = participationsResult.data.length;
-          }
-        } catch (error) {
-          participationsCount = 0;
-        }
-      }
-
-      const remainingPlaces = session.capacity - participationsCount;
-      const isFull = remainingPlaces <= 0;
-
-      return {
-        ...session,
-        remainingPlaces,
-        isFull,
-        participationsCount,
-      };
-    });
-
-    try {
-      const stats = await Promise.all(statsPromises);
-      setSessionsWithStats(stats);
-    } catch (error) {
-      setSessionsWithStats(
-        sessionsList.map((session) => ({
-          ...session,
-          remainingPlaces: session.capacity,
-          isFull: false,
-          participationsCount: 0,
-        }))
-      );
-    }
-  };
-
-  const loadPanierItems = async () => {
+  const loadPanierItems = useCallback(async () => {
     setPanierLoading(true);
     const result = await panierService.getPanier();
     if (result.success && result.data?.sessions) {
@@ -135,17 +100,70 @@ export default function FormationDetailPage() {
       setPanierItems(new Set());
     }
     setPanierLoading(false);
-  };
+  }, []);
 
-  const loadPaidSessions = async () => {
+  const loadPaidSessions = useCallback(async () => {
     const result = await participationService.getMyParticipations();
     if (result.success && result.data) {
       const sessionIds = new Set(
-        result.data.map((participation) => participation.session.id)
+        result.data
+          .map((participation) => participation.sessionId)
+          .filter(Boolean)
       );
       setPaidSessions(sessionIds);
+    } else {
+      setPaidSessions(new Set());
     }
-  };
+  }, []);
+
+  const reloadData = useCallback(() => {
+    if (authService.isAuthenticated() && id) {
+      loadPanierItems();
+      loadPaidSessions();
+      loadSessions();
+    }
+  }, [id, loadPanierItems, loadPaidSessions, loadSessions]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    loadFormation();
+    loadSessions();
+    if (authService.isAuthenticated()) {
+      loadPanierItems();
+      loadPaidSessions();
+    } else {
+      setPanierLoading(false);
+    }
+  }, [id, loadFormation, loadSessions, loadPanierItems, loadPaidSessions]);
+
+  useEffect(() => {
+    if (formation) {
+      loadRelatedFormations();
+    }
+  }, [formation, loadRelatedFormations]);
+
+  useEffect(() => {
+    const handlePanierUpdate = () => reloadData();
+    window.addEventListener("panierUpdated", handlePanierUpdate);
+    return () => window.removeEventListener("panierUpdated", handlePanierUpdate);
+  }, [reloadData]);
+
+  useEffect(() => {
+    const handleFocus = () => reloadData();
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [reloadData]);
+
+  useEffect(() => {
+    if (
+      location.pathname.includes(`/formation/${id}`) &&
+      authService.isAuthenticated() &&
+      id
+    ) {
+      reloadData();
+    }
+  }, [location.pathname, id, reloadData]);
 
   const handleAddToPanier = async (sessionId) => {
     if (!authService.isAuthenticated()) {
@@ -192,7 +210,10 @@ export default function FormationDetailPage() {
     <div className="min-h-screen bg-fond px-5">
       <Header />
       <div className="p-6 md:p-8">
-        <button onClick={() => navigate(-1)} className="text-gray-500 hover:text-gray-900 mb-4">
+        <button
+          onClick={() => navigate(-1)}
+          className="text-gray-500 hover:text-gray-900 mb-4"
+        >
           &lt; Retour
         </button>
 
@@ -201,20 +222,28 @@ export default function FormationDetailPage() {
             <FormationDetailHeader formation={formation} />
             <div className="mt-12">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-medium relative w-fit pb-2"> Autres formations à consulter <span className="absolute left-0 bottom-0 w-full h-[3px] bg-gray-200 rounded-full"></span>
+                <h2 className="text-2xl font-medium relative w-fit pb-2">
+                  Autres formations à consulter
+                  <span className="absolute left-0 bottom-0 w-full h-[3px] bg-gray-200 rounded-full"></span>
                 </h2>
-                <Link to={ROUTES.CATALOGUE} className="font-regular text-gray-600 hover:text-gray-950 pt-[20px]" > Voir plus
+                <Link
+                  to={ROUTES.CATALOGUE}
+                  className="font-regular text-gray-600 hover:text-gray-950 pt-[20px]"
+                >
+                  Voir plus
                 </Link>
               </div>
-              <FormationDetailRelatedFormations relatedFormations={relatedFormations} />
+              <FormationDetailRelatedFormations
+                relatedFormations={relatedFormations}
+              />
             </div>
           </div>
           <div className="lg:border-l lg:border-gray-300 lg:pl-7">
             <div className="sticky top-24">
               <h3 className="text-xl font-semibold text-gray-900 mb-6 px-5">
-                Listes de sessions disponibles
+                Liste de sessions disponibles
               </h3>
-             <div className="h-[2px] bg-gray-200 mx-5 mb-6 rounded-full" />
+              <div className="h-[2px] bg-gray-200 mx-5 mb-6 rounded-full" />
               <FormationDetailCalendar
                 sessions={sessionsWithStats}
                 currentMonth={currentMonth}
@@ -230,8 +259,8 @@ export default function FormationDetailPage() {
             </div>
           </div>
         </div>
-
       </div>
+      <Footer />
     </div>
   );
 }

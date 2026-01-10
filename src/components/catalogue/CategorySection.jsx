@@ -25,14 +25,11 @@ export default function CategorySection({ category, formations }) {
 
   return (
     <div className="mt-12">
-      {/* Titre */}
       <div className="flex items-center justify-center md:justify-start gap-3 mb-4">
         <img src={starorange} className="w-8 h-8" />
         <h2 className="text-[24px] md:text-[40px] font-bold text-gray-900">{category.name}</h2>
         <img src={starorange} className="w-8 h-8" />
       </div>
-
-      {/* Description + Flèches */}
       <div className="flex items-center justify-between px-5 mb-6">
         {category.description && (
           <p className="text-gray-700">{category.description}</p>

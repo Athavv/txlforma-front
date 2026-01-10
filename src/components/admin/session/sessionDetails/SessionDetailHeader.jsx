@@ -11,24 +11,22 @@ export default function SessionDetailHeader({ session, onEdit }) {
               {session.formation.category.name}
             </span>
           )}
-          <h1 className="text-[40px] font-semibold text-noir mt-5">
+          <h1 className="text-2xl sm:text-3xl lg:text-[40px] font-semibold text-noir mt-5">
             Session {session.formation?.title || "Session"}
           </h1>
           {session.price && (
-            <h2 className="text-[32px] font-semibold mt-2">
+            <h2 className="text-xl sm:text-2xl lg:text-[32px] font-semibold mt-2">
               {session.price}€
             </h2>
           )}
         </div>
-        <button
-          onClick={onEdit}
-          className="flex items-center gap-2 px-4 py-2 bg-noir text-white rounded-full hover:bg-violet transition-colors"
-        >
-          <Edit className="h-4 w-4" />
-          <span className="text-sm px-3 py-1">Modifier la session</span>
-        </button>
+        {typeof onEdit === "function" && (
+          <button onClick={onEdit} className="flex items-center gap-2 px-4 py-2 bg-noir text-white rounded-full hover:bg-violet transition-colors">
+            <Edit className="h-4 w-4" />
+            <span className="text-sm px-3 py-1">Modifier la session</span>
+          </button>
+        )}
       </div>
     </div>
   );
 }
-

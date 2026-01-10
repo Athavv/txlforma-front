@@ -3,59 +3,114 @@ import { authService } from "../../api/auth.service";
 import { useNavigate, Link } from "react-router-dom";
 import { ROUTES } from "../../constants";
 import pageinscription from "../../assets/images/login/pageinscription.png";
+import api from "../../api/api";
+import { User } from "lucide-react";
+import { getImageUrl } from "../../utils/imageUtils";
 
 function Register() {
-  const [data, setData] = useState({
+  const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
     email: "",
     password: "",
     confirm: "",
+    acceptCGU: false,
+    imageUrl: "",
   });
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
   const navigate = useNavigate();
 
-  const change = (event) => {
-    setData({ ...data, [event.target.name]: event.target.value });
+  const handleChange = (event) => {
+    const { name, value, type, checked } = event.target;
+    setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
     setError("");
   };
 
-  const validateEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError("Veuillez sélectionner une image valide");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError("L'image ne doit pas dépasser 5MB");
+      return;
+    }
+
+    setUploading(true);
+    setError("");
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append("file", file);
+      const response = await api.post("/files/upload/users", formDataUpload, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setFormData({ ...formData, imageUrl: response.data });
+      setPreviewImage(URL.createObjectURL(file));
+    } catch (err) {
+      setError("Erreur lors de l'upload de l'image");
+    } finally {
+      setUploading(false);
+    }
   };
 
-  const submit = async (event) => {
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
 
     if (
-      !data.firstname ||
-      !data.lastname ||
-      !data.email ||
-      !data.password ||
-      !data.confirm
+      !formData.firstname ||
+      !formData.lastname ||
+      !formData.email ||
+      !formData.password ||
+      !formData.confirm
     ) {
       return setError("Veuillez remplir tous les champs");
     }
 
-    if (!validateEmail(data.email)) {
+    if (!validateEmail(formData.email)) {
       return setError("Veuillez entrer un email valide");
     }
 
-    if (data.password.length < 6) {
+    if (formData.password.length < 6) {
       return setError("Le mot de passe doit contenir au moins 6 caractères");
     }
 
-    if (data.password !== data.confirm) {
+    if (formData.password !== formData.confirm) {
       return setError("Les mots de passe ne correspondent pas");
+    }
+
+    if (!formData.acceptCGU) {
+      return setError(
+        "Vous devez accepter les conditions générales pour continuer"
+      );
     }
 
     setLoading(true);
     try {
-      const result = await authService.register(data);
+      const submitData = {
+        firstname: formData.firstname,
+        lastname: formData.lastname,
+        email: formData.email,
+        password: formData.password,
+      };
+
+      if (formData.imageUrl) {
+        submitData.imageUrl = formData.imageUrl;
+      }
+
+      const result = await authService.register(submitData);
       if (result.success) {
-        navigate("/login");
+        navigate(ROUTES.LOGIN);
       } else {
         setError(result.error || "Erreur lors de l'inscription");
       }
@@ -97,90 +152,131 @@ function Register() {
               </div>
             )}
 
-            <form onSubmit={submit} className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="mt-8">
+                <label className="block text-xl font-medium text-gray-700 mb-3">
+                  Photo de profil
+                </label>
+                <div className="flex items-center gap-4">
+                  {previewImage || formData.imageUrl ? (
+                    <img
+                      src={previewImage || getImageUrl(formData.imageUrl)}
+                      alt="Preview"
+                      className="h-24 w-24 rounded-full object-cover border-2 border-gray-300"
+                    />
+                  ) : (
+                    <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center border-2 border-gray-300">
+                      <User className="h-12 w-12 text-gray-400" />
+                    </div>
+                  )}
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      disabled={uploading}
+                      className="hidden"
+                      id="profile-image-upload"
+                    />
+                    <label
+                      htmlFor="profile-image-upload"
+                      className={`inline-block px-4 py-2 rounded-lg cursor-pointer transition-colors border ${
+                        uploading
+                          ? "bg-gray-300 text-gray-500 cursor-not-allowed border-gray-300"
+                          : "bg-white text-noir border-noir hover:bg-gray-50"
+                      }`}
+                    >
+                      {uploading ? "Upload en cours..." : "Insérer une image"}
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xl font-medium text-gray-700 mb-1">
                     Prénom
                   </label>
-                  <div className="relative">
-                    <input
-                      name="firstname"
-                      onChange={change}
-                      value={data.firstname}
-                      placeholder="ex : Thomas"
-                      className="w-full pt-3 py-2 border-0 border-b border-gray-300"
-                      required
-                    />
-                  </div>
+                  <input
+                    name="firstname"
+                    onChange={handleChange}
+                    value={formData.firstname}
+                    placeholder="ex : Thomas"
+                    className="w-full pt-3 py-2 border-0 border-b border-gray-300"
+                  />
                 </div>
                 <div>
                   <label className="block text-xl font-medium text-gray-700 mb-1">
                     Nom
                   </label>
-                  <div className="relative">
-                    <input
-                      name="lastname"
-                      onChange={change}
-                      value={data.lastname}
-                      placeholder="ex : Endrick"
-                      className="w-full pt-3 py-2 border-0 border-b border-gray-300"
-                      required
-                    />
-                  </div>
+                  <input
+                    name="lastname"
+                    onChange={handleChange}
+                    value={formData.lastname}
+                    placeholder="ex : Endrick"
+                    className="w-full pt-3 py-2 border-0 border-b border-gray-300"
+                  />
                 </div>
               </div>
-
               <div>
                 <label className="block text-xl font-medium text-gray-700 mb-1">
                   Email
                 </label>
-                <div className="relative">
-                  <input
-                    type="email"
-                    name="email"
-                    onChange={change}
-                    value={data.email}
-                    placeholder="nom@exemple.com"
-                    className="w-full pt-3 py-2 border-0 border-b border-gray-300"
-                    required
-                  />
-                </div>
+                <input
+                  type="email"
+                  name="email"
+                  onChange={handleChange}
+                  value={formData.email}
+                  placeholder="nom@exemple.com"
+                  className="w-full pt-3 py-2 border-0 border-b border-gray-300"
+                />
               </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xl font-medium text-gray-700 mb-1">
                     Mot de passe
                   </label>
-                  <div className="relative">
-                    <input
-                      type="password"
-                      name="password"
-                      onChange={change}
-                      value={data.password}
-                      placeholder="••••••••"
-                      className="w-full pt-3 py-2 border-0 border-b border-gray-300"
-                      required
-                    />
-                  </div>
+                  <input
+                    type="password"
+                    name="password"
+                    onChange={handleChange}
+                    value={formData.password}
+                    placeholder="••••••••"
+                    className="w-full pt-3 py-2 border-0 border-b border-gray-300"
+                  />
                 </div>
+
                 <div>
                   <label className="block text-xl font-medium text-gray-700 mb-1">
                     Confirmation
                   </label>
-                  <div className="relative">
-                    <input
-                      type="password"
-                      name="confirm"
-                      onChange={change}
-                      value={data.confirm}
-                      placeholder="••••••••"
-                      className="w-full pt-3 py-2 border-0 border-b border-gray-300"
-                      required
-                    />
-                  </div>
+                  <input
+                    type="password"
+                    name="confirm"
+                    onChange={handleChange}
+                    value={formData.confirm}
+                    placeholder="••••••••"
+                    className="w-full pt-3 py-2 border-0 border-b border-gray-300"
+                  />
                 </div>
+              </div>
+              <div className="flex items-start gap-3 mt-4">
+                <input
+                  type="checkbox"
+                  name="acceptCGU"
+                  checked={formData.acceptCGU}
+                  onChange={handleChange}
+                  className="mt-1 h-4 w-4 border-gray-300 rounded"
+                />
+
+                <label className="text-sm text-noir">
+                  J’accepte les{" "}
+                  <Link
+                    to={ROUTES.CONFIDENTIALITE}
+                    className="text-bleu underline hover:text-bleu/80"
+                  >
+                    conditions générales d’utilisation
+                  </Link>
+                </label>
               </div>
 
               <button
@@ -199,10 +295,9 @@ function Register() {
                   "S'inscrire"
                 )}
               </button>
-
               <p className="text-center text-md text-gray-600">
                 Vous avez déjà un compte ?{" "}
-                <Link to="/login" className="font-bold">
+                <Link to={ROUTES.LOGIN} className="font-bold">
                   Se connecter
                 </Link>
               </p>

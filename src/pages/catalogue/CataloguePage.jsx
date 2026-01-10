@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Header from "../../components/common/layout/Header";
+import Footer from "../../components/common/layout/Footer";
 import { categoryService } from "../../api/category.service";
 import { formationService } from "../../api/formation.service";
 import CatalogueHero from "../../components/catalogue/CatalogueHero";
@@ -44,7 +45,6 @@ export default function CataloguePage() {
     );
   }
 
-  // Grouper les formations par catégorie
   const formationsByCategory = categories
     .map((category) => {
       const categoryFormations = formations.filter(
@@ -85,6 +85,7 @@ export default function CataloguePage() {
           ))
         )}
       </div>
+      <Footer />
     </div>
   );
 }

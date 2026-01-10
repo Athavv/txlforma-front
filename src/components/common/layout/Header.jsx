@@ -4,8 +4,7 @@ import { authService } from "../../../api/auth.service";
 import { panierService } from "../../../api/panier.service";
 import { ShoppingCart, LogOut } from "lucide-react";
 import { ROUTES, ROLES } from "../../../constants";
-import panierIcon from "../../../assets/images/panier/Panier.png";
-
+import panierIcon from "../../../assets/images/panier/panier.png";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -63,18 +62,21 @@ export default function Header() {
     } else if (role === ROLES.USER) {
       navigate(ROUTES.PROFILE);
     } else {
-      navigate("/dashboard");
+      navigate(ROUTES.DASHBOARD);
     }
   };
 
   return (
-    <header className="relative top-0 z-50 flex items-center justify-between py-4 px-16">
-      <Link to="/" className="text-xl font-bold text-vert relative z-10">
+    <header className="relative top-0 z-50 flex items-center justify-between py-4 px-6 md:px-16">
+      <Link
+        to={ROUTES.HOME}
+        className="text-xl font-bold text-vert relative z-10"
+      >
         <img src="/logo.png" className="h-10" alt="Txlforma" />
       </Link>
       <nav className="hidden lg:flex gap-12 text-sm font-medium bg-vert px-6 py-2 rounded-full relative z-10">
         <Link
-          to="/"
+          to={ROUTES.HOME}
           className={`px-8 py-3 rounded-full transition-all ${
             isActive("/") && !isActive("/dashboard") && !isActive("/admin")
               ? "bg-blanc text-noir"
@@ -84,7 +86,7 @@ export default function Header() {
           Accueil
         </Link>
         <Link
-          to="/catalogue"
+          to={ROUTES.CATALOGUE}
           className={`px-8 py-3 rounded-full transition-all ${
             isActive("/catalogue") ? "bg-blanc text-noir" : "hover:bg-blanc"
           }`}
@@ -99,7 +101,7 @@ export default function Header() {
               ? ROUTES.FORMATEUR
               : role === ROLES.USER
               ? ROUTES.PROFILE
-              : "/dashboard"
+              : ROUTES.DASHBOARD
           }
           onClick={handleDashboardClick}
           className={`px-8 py-3 rounded-full transition-all ${
@@ -162,7 +164,7 @@ export default function Header() {
           </button>
         ) : (
           <Link
-            to="/login"
+            to={ROUTES.LOGIN}
             className="bg-vert px-8 py-3 rounded-full font-medium hover:-translate-y-1 active:bg-noir active:text-blanc transition-all"
           >
             Connexion
@@ -173,11 +175,11 @@ export default function Header() {
         ☰
       </button>
       {open && (
-        <div className="absolute top-full left-0 w-full bg-beige flex flex-col items-center py-6 gap-6 lg:hidden z-50">
-          <Link to="/" className="text-lg">
+        <div className="absolute top-full left-0 w-full bg-fond flex flex-col items-center py-6 gap-6 lg:hidden z-50">
+          <Link to={ROUTES.HOME} className="text-lg">
             Accueil
           </Link>
-          <Link to="/catalogue" className="text-lg">
+          <Link to={ROUTES.CATALOGUE} className="text-lg">
             Catalogue
           </Link>
           <Link
@@ -188,14 +190,14 @@ export default function Header() {
                 ? ROUTES.FORMATEUR
                 : role === ROLES.USER
                 ? ROUTES.PROFILE
-                : "/dashboard"
+                : ROUTES.DASHBOARD
             }
             onClick={handleDashboardClick}
             className="text-lg"
           >
             Tableau de bord
           </Link>
-          <Link to="/about" className="text-lg">
+          <Link to={ROUTES.ABOUT_US} className="text-lg">
             À propos
           </Link>
           {isAuthenticated ? (
@@ -228,7 +230,7 @@ export default function Header() {
               Déconnexion
             </button>
           ) : (
-            <Link to="/login" className="bg-vert px-6 py-2 rounded-full">
+            <Link to={ROUTES.LOGIN} className="bg-vert px-6 py-2 rounded-full">
               Connexion
             </Link>
           )}

@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, Outlet } from "react-router-dom";
 import Header from "../common/layout/Header.jsx";
+import Footer from "../common/layout/Footer.jsx";
 import { userService } from "../../api/user.service";
-import { User } from "lucide-react";
+import { User, Pencil } from "lucide-react";
 import { ROUTES } from "../../constants";
 import { getRoleLabel } from "../../utils/roleUtils";
 import { getImageUrl } from "../../utils/imageUtils";
+import EditProfileModal from "../common/EditProfileModal.jsx";
 
 export default function AdminLayout() {
   const location = useLocation();
   const [user, setUser] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -18,6 +21,11 @@ export default function AdminLayout() {
     };
     loadUser();
   }, []);
+
+  const handleEditSuccess = async () => {
+    const result = await userService.getCurrentUser();
+    if (result.success) setUser(result.data);
+  };
 
   const isActive = (path) => {
     if (path === "/admin") {
@@ -38,9 +46,7 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-fond">
-      {/* Header */}
       <Header />
-      {/* User Profile Section */}
       <div className="px-16 py-6 bg-fond border-b border-gray-200">
         <div className="flex items-center gap-6">
           {user ? (
@@ -60,11 +66,20 @@ export default function AdminLayout() {
                 <p className="text-base text-gray-600 mb-1">
                   Content de te revoir !
                 </p>
-                <h2 className="text-2xl font-bold text-noir mb-2">
-                  {user.firstname && user.lastname
-                    ? `${user.firstname} ${user.lastname}`
-                    : user.email?.split("@")[0] || "Utilisateur"}
-                </h2>
+                <div className="flex items-center gap-2 mb-2">
+                  <h2 className="text-2xl font-bold text-noir">
+                    {user.firstname && user.lastname
+                      ? `${user.firstname} ${user.lastname}`
+                      : user.email?.split("@")[0] || "Utilisateur"}
+                  </h2>
+                  <button
+                    onClick={() => setShowEditModal(true)}
+                    className="p-1.5 text-gray-600 hover:text-noir hover:bg-gray-100 rounded-full transition-colors"
+                    title="Modifier mon profil"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                </div>
                 <span
                   className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold text-noir bg-blanc`}
                 >
@@ -86,7 +101,6 @@ export default function AdminLayout() {
         </div>
       </div>
 
-      {/* Secondary Navigation */}
       <div className="px-16 border-b border-gray-200 bg-fond">
         <nav className="flex gap-8">
           {navItems.map((item) => (
@@ -108,10 +122,17 @@ export default function AdminLayout() {
         </nav>
       </div>
 
-      {/* Main Content */}
       <div className="px-16 py-8">
         <Outlet />
       </div>
+      <Footer />
+      {showEditModal && user && (
+        <EditProfileModal
+          user={user}
+          onClose={() => setShowEditModal(false)}
+          onSuccess={handleEditSuccess}
+        />
+      )}
     </div>
   );
 }

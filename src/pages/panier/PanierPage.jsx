@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../../components/common/layout/Header";
+import Footer from "../../components/common/layout/Footer";
 import PanierHeader from "../../components/panier/PanierHeader";
 import PanierContent from "../../components/panier/PanierContent";
 import PaymentSuccessModal from "../../components/panier/PaymentSuccessModal";
@@ -63,7 +64,6 @@ export default function PanierPage() {
         try {
           await paymentService.syncCheckoutSession(sessionId);
         } catch (error) {
-          console.error("Erreur lors de la synchronisation:", error);
         }
         await panierService.clearPanier();
       };
@@ -76,7 +76,7 @@ export default function PanierPage() {
 
   useEffect(() => {
     if (showPaymentSuccess) {
-      const timer = setTimeout(() => navigate("/dashboard"), 3000);
+      const timer = setTimeout(() => navigate(ROUTES.DASHBOARD), 3000);
       return () => clearTimeout(timer);
     }
   }, [showPaymentSuccess, navigate]);
@@ -123,6 +123,7 @@ export default function PanierPage() {
         <div className="flex justify-center items-center py-20">
           <div>Chargement du panier...</div>
         </div>
+        <Footer/>
       </div>
     );
   }
@@ -134,7 +135,7 @@ export default function PanierPage() {
     <div className="min-h-screen bg-[#F9F9F9]">
       <Header />
       { showPaymentSuccess && <PaymentSuccessModal />} 
-      <div className="w-full mx-auto px-12 py-8">
+      <div className="w-full mx-auto px-5 md:px-12 py-8">
         <PanierHeader />
         <PanierContent
           sessions={sessions}
@@ -146,6 +147,7 @@ export default function PanierPage() {
           onProceedToPayment={handleProceedToPayment}
         />
       </div>
+      <Footer/>
     </div>
   );
 }
