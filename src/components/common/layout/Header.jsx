@@ -4,7 +4,7 @@ import { authService } from "../../../api/auth.service";
 import { panierService } from "../../../api/panier.service";
 import { ShoppingCart, LogOut } from "lucide-react";
 import { ROUTES, ROLES } from "../../../constants";
-import panierIcon from "../../../assets/images/panier/panier.png";
+import panierIcon from "@/assets/images/panier/panier.png";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
