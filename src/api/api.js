@@ -22,18 +22,29 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    // Gérer les erreurs réseau (CORS, timeout, etc.)
+    if (!error.response) {
+      // Erreur réseau (CORS, timeout, etc.) - ne pas rediriger
+      console.error("Erreur réseau:", error.message);
+      return Promise.reject(error);
+    }
+
+    // Gérer les erreurs HTTP
+    if (error.response.status === 401) {
       const url = error.config?.url || "";
       const isAuthAttempt = /\/auth\/(login|register)/.test(url);
-      if (!isAuthAttempt) {
+      // Ne rediriger que si ce n'est pas une tentative d'authentification
+      // et seulement si l'utilisateur était authentifié
+      if (!isAuthAttempt && localStorage.getItem("token")) {
         localStorage.clear();
         window.location.href = "/login";
       }
-    } else if (error.response?.status === 403) {
-      console.error("Accès refusé");
-    } else if (error.response?.status === 404) {
+    } else if (error.response.status === 403) {
+      // Erreur CORS ou accès refusé - ne pas rediriger
+      console.error("Accès refusé (403)");
+    } else if (error.response.status === 404) {
       console.error("Ressource introuvable");
-    } else if (error.response?.status >= 500) {
+    } else if (error.response.status >= 500) {
       console.error("Erreur serveur");
     }
     return Promise.reject(error);
