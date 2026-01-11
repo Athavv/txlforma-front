@@ -14,25 +14,17 @@ export default function CategoriesFormations() {
 
   useEffect(() => {
     const loadData = async () => {
-      try {
-        const [categoriesResult, formationsResult] = await Promise.all([
-          categoryService.getAllCategories(),
-          formationService.getAllFormations(),
-        ]);
-        if (categoriesResult?.success) {
-          setCategories(categoriesResult.data || []);
-        }
-        if (formationsResult?.success) {
-          setFormations(formationsResult.data || []);
-        }
-      } catch (error) {
-        console.error("Erreur lors du chargement des données:", error);
-        // En cas d'erreur, on continue avec des tableaux vides
-        setCategories([]);
-        setFormations([]);
-      } finally {
-        setLoading(false);
+      const [categoriesResult, formationsResult] = await Promise.all([
+        categoryService.getAllCategories(),
+        formationService.getAllFormations(),
+      ]);
+      if (categoriesResult.success) {
+        setCategories(categoriesResult.data);
       }
+      if (formationsResult.success) {
+        setFormations(formationsResult.data);
+      }
+      setLoading(false);
     };
 
     loadData();
@@ -44,10 +36,6 @@ export default function CategoriesFormations() {
         <div className="h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
-  }
-
-  if (categories.length === 0) {
-    return null; // Ne rien afficher si aucune catégorie n'est disponible
   }
 
   return (
