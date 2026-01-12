@@ -64,7 +64,7 @@ export default function SessionAVenir({ sessions }) {
             return (
               <div
                 key={session.id}
-                className="bg-white rounded-2xl p-6 min-w-[320px] max-w-[640px] space-y-4 flex-shrink-0"
+                className="bg-white rounded-2xl p-6 min-w-[640px] max-w-[640px] space-y-4 flex-shrink-0"
               >
                 <div className="w-full h-40 bg-gray-200 rounded-lg overflow-hidden">
                   {imageUrl ? (

@@ -52,7 +52,7 @@ export default function SessionDetailFormateur() {
 
       setSession(sessionResponse.data);
 
-      const participantsData = participantsResponse.success
+      const participantsData = participantsResponse.success && participantsResponse.data
         ? participantsResponse.data.map((participant) => ({
             participationId: participant.id,
             userId: participant.userId,

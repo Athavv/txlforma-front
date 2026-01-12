@@ -38,7 +38,7 @@ export default function SessionParticipantsFormateurSection({
       case "VALIDE":
         return "ÉMARGÉ";
       case "ABSENT":
-        return "NON ÉMARGÉ";
+        return "ABSENT";
       case "INSCRIT":
       default:
         if (hasParticipationAt) {
@@ -66,16 +66,20 @@ export default function SessionParticipantsFormateurSection({
     }
   };
 
+  const isParticipantPresent = (participant) => {
+    return participant.status === "PRESENT" || 
+           participant.status === "VALIDE" || 
+           !!participant.participationAt;
+  };
+
+  const hasAtLeastOnePresentParticipant = participants.some(isParticipantPresent);
+
   const hasAtLeastOneNote = participants.some(
     (particip) =>
-      particip.status === "PRESENT" &&
+      isParticipantPresent(particip) &&
       notesMap[particip.participationId]?.note !== undefined &&
       notesMap[particip.participationId]?.note !== null &&
       notesMap[particip.participationId]?.note !== ""
-  );
-
-  const hasAtLeastOneEmargedParticipant = participants.some(
-    (particip) => particip.status === "PRESENT"
   );
 
   return (
@@ -106,17 +110,14 @@ export default function SessionParticipantsFormateurSection({
         )}
 
         <div className="mt-2 md:mt-0 md:ml-auto">
-          {hasAtLeastOneEmargedParticipant && (
+          {hasAtLeastOnePresentParticipant && (
             <button
               onClick={async () => {
                 if (isEditingAllNotes) {
                   for (const participant of participants) {
-                    if (
-                      participant.status !== "PRESENT" &&
-                      participant.status !== "VALIDE" &&
-                      !participant.participationAt
-                    )
+                    if (!isParticipantPresent(participant)) {
                       continue;
+                    }
 
                     const value = notesDraft[participant.participationId];
                     if (value === undefined || value === "") continue;
@@ -149,7 +150,7 @@ export default function SessionParticipantsFormateurSection({
                 } else {
                   setNotesDraft(
                     participants.reduce((acc, particip) => {
-                      if (particip.status === "PRESENT") {
+                      if (isParticipantPresent(particip)) {
                         acc[particip.participationId] =
                           notesMap[particip.participationId]?.note || "";
                       }
@@ -170,30 +171,43 @@ export default function SessionParticipantsFormateurSection({
           )}
         </div>
       </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-[600px] w-full">
-          <thead>
-            <tr className="border-b border-gray-200">
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                NOM
-              </th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                STATUT
-              </th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                DATE EMARGEMENT
-              </th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                NOTE
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {participants.map((participant) => {
+      {participants.length === 0 ? (
+        <div className="bg-white rounded-2xl p-6 text-center text-gray-500">
+          Aucun participant pour le moment.
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-[600px] w-full">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  NOM
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  STATUT
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  DATE EMARGEMENT
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  NOTE
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {participants.map((participant) => {
               const note = notesMap[participant.participationId];
-              const isSessionFinished =
-                session.endDate && new Date(session.endDate) < new Date();
+              const isSessionFinished = session.endDate && session.endTime
+                ? new Date(`${session.endDate}T${session.endTime}`) < new Date()
+                : session.endDate
+                ? (() => {
+                    const sessionEndDate = new Date(session.endDate);
+                    sessionEndDate.setHours(23, 59, 59, 999);
+                    return sessionEndDate < new Date();
+                  })()
+                : false;
               const hasParticipationAt = !!participant.participationAt;
+              const isPresent = isParticipantPresent(participant);
 
               return (
                 <tr
@@ -239,9 +253,7 @@ export default function SessionParticipantsFormateurSection({
                       : "-"}
                   </td>
                   <td className="py-3 px-4">
-                    {participant.status !== "PRESENT" &&
-                    participant.status !== "VALIDE" &&
-                    !hasParticipationAt ? (
+                    {!isPresent ? (
                       <span className="text-sm text-gray-400">-</span>
                     ) : (
                       <div className="flex items-center gap-1 w-[64px]">
@@ -279,9 +291,10 @@ export default function SessionParticipantsFormateurSection({
                 </tr>
               );
             })}
-          </tbody>
-        </table>
-      </div>
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
