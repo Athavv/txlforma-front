@@ -24,19 +24,40 @@ export default function FormateurDashboard() {
 
         if (sessionsResult.success) {
           sessionsAvecStatus = sessionsResult.data.map((session) => {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            const now = new Date();
 
-            const startDate = new Date(session.startDate);
-            startDate.setHours(0, 0, 0, 0);
-            const endDate = new Date(session.endDate);
-            endDate.setHours(0, 0, 0, 0);
+            // Construire la date/heure de début
+            const startDateTime = session.startDate && session.startTime
+              ? new Date(`${session.startDate}T${session.startTime}`)
+              : session.startDate
+              ? (() => {
+                  const d = new Date(session.startDate);
+                  d.setHours(0, 0, 0, 0);
+                  return d;
+                })()
+              : null;
+
+            // Construire la date/heure de fin
+            const endDateTime = session.endDate && session.endTime
+              ? new Date(`${session.endDate}T${session.endTime}`)
+              : session.endDate
+              ? (() => {
+                  const d = new Date(session.endDate);
+                  d.setHours(23, 59, 59, 999);
+                  return d;
+                })()
+              : null;
 
             let status = "";
-            if (today < startDate) status = "a_venir";
-            else if (today >= startDate && today <= endDate)
+            if (!startDateTime || !endDateTime) {
+              status = "passee"; // Par défaut si pas de dates
+            } else if (now < startDateTime) {
+              status = "a_venir";
+            } else if (now >= startDateTime && now <= endDateTime) {
               status = "en_cours";
-            else if (today > endDate) status = "passee";
+            } else {
+              status = "passee";
+            }
 
             return { ...session, status };
           });

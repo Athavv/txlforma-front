@@ -22,19 +22,36 @@ export default function SessionsPageFormateur() {
     loadSessions();
   }, []);
 
-  const normalizeDate = (date) => {
-    const normalizedDate = new Date(date);
-    normalizedDate.setHours(0, 0, 0, 0);
-    return normalizedDate;
-  };
-
   const getSessionStatus = (session) => {
-    const today = normalizeDate(new Date());
-    const start = normalizeDate(session.startDate);
-    const end = normalizeDate(session.endDate);
+    const now = new Date();
 
-    if (today < start) return "a_venir";
-    if (today <= end) return "en_cours";
+    // Construire la date/heure de début
+    const startDateTime = session.startDate && session.startTime
+      ? new Date(`${session.startDate}T${session.startTime}`)
+      : session.startDate
+      ? (() => {
+          const d = new Date(session.startDate);
+          d.setHours(0, 0, 0, 0);
+          return d;
+        })()
+      : null;
+
+    // Construire la date/heure de fin
+    const endDateTime = session.endDate && session.endTime
+      ? new Date(`${session.endDate}T${session.endTime}`)
+      : session.endDate
+      ? (() => {
+          const d = new Date(session.endDate);
+          d.setHours(23, 59, 59, 999);
+          return d;
+        })()
+      : null;
+
+    if (!startDateTime || !endDateTime) {
+      return "passee"; // Par défaut si pas de dates
+    }
+    if (now < startDateTime) return "a_venir";
+    if (now >= startDateTime && now <= endDateTime) return "en_cours";
     return "passee";
   };
 
