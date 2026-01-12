@@ -39,6 +39,7 @@ export default function Emargement() {
       return;
     }
     setShowSuccessModal(true);
+    window.dispatchEvent(new Event("emargementUpdated"));
   };
 
   return (

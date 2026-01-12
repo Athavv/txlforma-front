@@ -207,55 +207,57 @@ export default function FormationDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-fond px-5">
+    <div className="min-h-screen bg-fond flex flex-col">
       <Header />
-      <div className="p-6 md:p-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="text-gray-500 hover:text-gray-900 mb-4"
-        >
-          &lt; Retour
-        </button>
+      <div className="flex-1 px-5">
+        <div className="p-6 md:p-8">
+          <button
+            onClick={() => navigate(-1)}
+            className="text-gray-500 hover:text-gray-900 mb-4"
+          >
+            &lt; Retour
+          </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <FormationDetailHeader formation={formation} />
-            <div className="mt-12">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-medium relative w-fit pb-2">
-                  Autres formations à consulter
-                  <span className="absolute left-0 bottom-0 w-full h-[3px] bg-gray-200 rounded-full"></span>
-                </h2>
-                <Link
-                  to={ROUTES.CATALOGUE}
-                  className="font-regular text-gray-600 hover:text-gray-950 pt-[20px]"
-                >
-                  Voir plus
-                </Link>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <FormationDetailHeader formation={formation} />
+              <div className="mt-12">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-medium relative w-fit pb-2">
+                    Autres formations à consulter
+                    <span className="absolute left-0 bottom-0 w-full h-[3px] bg-gray-200 rounded-full"></span>
+                  </h2>
+                  <Link
+                    to={ROUTES.CATALOGUE}
+                    className="font-regular text-gray-600 hover:text-gray-950 pt-[20px]"
+                  >
+                    Voir plus
+                  </Link>
+                </div>
+                <FormationDetailRelatedFormations
+                  relatedFormations={relatedFormations}
+                />
               </div>
-              <FormationDetailRelatedFormations
-                relatedFormations={relatedFormations}
-              />
             </div>
-          </div>
-          <div className="lg:border-l lg:border-gray-300 lg:pl-7">
-            <div className="sticky top-24">
-              <h3 className="text-xl font-semibold text-gray-900 mb-6 px-5">
-                Liste de sessions disponibles
-              </h3>
-              <div className="h-[2px] bg-gray-200 mx-5 mb-6 rounded-full" />
-              <FormationDetailCalendar
-                sessions={sessionsWithStats}
-                currentMonth={currentMonth}
-                onMonthChange={handleMonthChange}
-              />
-              <FormationDetailSessionList
-                sessions={sessionsWithStats}
-                onAddToPanier={handleAddToPanier}
-                panierItems={panierItems}
-                paidSessions={paidSessions}
-                panierLoading={panierLoading}
-              />
+            <div className="lg:border-l lg:border-gray-300 lg:pl-7">
+              <div className="sticky top-24">
+                <h3 className="text-xl font-semibold text-gray-900 mb-6 px-5">
+                  Liste de sessions disponibles
+                </h3>
+                <div className="h-[2px] bg-gray-200 mx-5 mb-6 rounded-full" />
+                <FormationDetailCalendar
+                  sessions={sessionsWithStats}
+                  currentMonth={currentMonth}
+                  onMonthChange={handleMonthChange}
+                />
+                <FormationDetailSessionList
+                  sessions={sessionsWithStats}
+                  onAddToPanier={handleAddToPanier}
+                  panierItems={panierItems}
+                  paidSessions={paidSessions}
+                  panierLoading={panierLoading}
+                />
+              </div>
             </div>
           </div>
         </div>

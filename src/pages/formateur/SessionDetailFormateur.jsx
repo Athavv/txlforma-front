@@ -20,6 +20,21 @@ export default function SessionDetailFormateur() {
     window.scrollTo(0, 0);
   }, [id]);
 
+  useEffect(() => {
+    const handleEmargementUpdate = () => {
+      loadSessionData();
+    };
+    const handleFocus = () => {
+      loadSessionData();
+    };
+    window.addEventListener("emargementUpdated", handleEmargementUpdate);
+    window.addEventListener("focus", handleFocus);
+    return () => {
+      window.removeEventListener("emargementUpdated", handleEmargementUpdate);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, []);
+
   const loadSessionData = async () => {
     try {
       setLoading(true);
