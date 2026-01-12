@@ -23,7 +23,7 @@ export default function SessionInfoSection({
                 year: "numeric",
               })}
               {session.startTime && session.endTime && (
-                <span className="ml-2 text-gray-600">
+                <span className="ml-2 text-noir text-sm">
                   ({session.startTime.substring(0, 5)} - {session.endTime.substring(0, 5)})
                 </span>
               )}

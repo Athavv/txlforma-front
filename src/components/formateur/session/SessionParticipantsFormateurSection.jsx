@@ -111,63 +111,72 @@ export default function SessionParticipantsFormateurSection({
 
         <div className="mt-2 md:mt-0 md:ml-auto">
           {hasAtLeastOnePresentParticipant && (
-            <button
-              onClick={async () => {
-                if (isEditingAllNotes) {
-                  for (const participant of participants) {
-                    if (!isParticipantPresent(participant)) {
-                      continue;
-                    }
-
-                    const value = notesDraft[participant.participationId];
-                    if (value === undefined || value === "") continue;
-
-                    const existingNote = notesMap[participant.participationId];
-
-                    if (existingNote) {
-                      await noteService.updateNote(existingNote.id, value);
-                    } else {
-                      await noteService.createNote(
-                        participant.participationId,
-                        value
-                      );
-                    }
-                  }
-
-                  setNotesMap((prev) => ({
-                    ...prev,
-                    ...Object.fromEntries(
-                      Object.entries(notesDraft).map(
-                        ([participationId, noteValue]) => [
-                          participationId,
-                          { ...prev[participationId], note: noteValue },
-                        ]
-                      )
-                    ),
-                  }));
-
-                  setIsEditingAllNotes(false);
-                } else {
-                  setNotesDraft(
-                    participants.reduce((acc, particip) => {
-                      if (isParticipantPresent(particip)) {
-                        acc[particip.participationId] =
-                          notesMap[particip.participationId]?.note || "";
+            remainingDays > 0 ? (
+              <button
+                onClick={async () => {
+                  if (isEditingAllNotes) {
+                    for (const participant of participants) {
+                      if (!isParticipantPresent(participant)) {
+                        continue;
                       }
-                      return acc;
-                    }, {})
-                  );
-                  setIsEditingAllNotes(true);
-                }
-              }}
-              className="bg-black text-white rounded-full px-6 py-3 whitespace-nowrap hover:-translate-y-1 transition-all"
-            >
-              {isEditingAllNotes
-                ? "Confirmer les notes"
-                : hasAtLeastOneNote
-                ? "Modifier les notes"
-                : "Ajouter les notes"}
-            </button>
+
+                      const value = notesDraft[participant.participationId];
+                      if (value === undefined || value === "") continue;
+
+                      const existingNote = notesMap[participant.participationId];
+
+                      if (existingNote) {
+                        await noteService.updateNote(existingNote.id, value);
+                      } else {
+                        await noteService.createNote(
+                          participant.participationId,
+                          value
+                        );
+                      }
+                    }
+
+                    setNotesMap((prev) => ({
+                      ...prev,
+                      ...Object.fromEntries(
+                        Object.entries(notesDraft).map(
+                          ([participationId, noteValue]) => [
+                            participationId,
+                            { ...prev[participationId], note: noteValue },
+                          ]
+                        )
+                      ),
+                    }));
+
+                    setIsEditingAllNotes(false);
+                  } else {
+                    setNotesDraft(
+                      participants.reduce((acc, particip) => {
+                        if (isParticipantPresent(particip)) {
+                          acc[particip.participationId] =
+                            notesMap[particip.participationId]?.note || "";
+                        }
+                        return acc;
+                      }, {})
+                    );
+                    setIsEditingAllNotes(true);
+                  }
+                }}
+                className="bg-black text-white rounded-full px-6 py-3 whitespace-nowrap hover:-translate-y-1 transition-all"
+              >
+                {isEditingAllNotes
+                  ? "Confirmer les notes"
+                  : hasAtLeastOneNote
+                  ? "Modifier les notes"
+                  : "Ajouter les notes"}
+              </button>
+            ) : (
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
+                <NotebookPen className="h-4 w-4 text-gray-500" />
+                <span className="text-sm text-gray-600 font-medium">
+                  Notes non modifiables
+                </span>
+              </div>
+            )
           )}
         </div>
       </div>
@@ -257,7 +266,7 @@ export default function SessionParticipantsFormateurSection({
                       <span className="text-sm text-gray-400">-</span>
                     ) : (
                       <div className="flex items-center gap-1 w-[64px]">
-                        {isEditingAllNotes ? (
+                        {isEditingAllNotes && remainingDays > 0 ? (
                           <input
                             type="number"
                             min={0}
