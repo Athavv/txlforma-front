@@ -64,7 +64,7 @@ export default function SessionAVenir({ sessions }) {
             return (
               <div
                 key={session.id}
-                className="bg-white rounded-2xl p-6 min-w-[320px] max-w-[320px] space-y-4 flex-shrink-0"
+                className="bg-white rounded-2xl p-6 min-w-[320px] max-w-[640px] space-y-4 flex-shrink-0"
               >
                 <div className="w-full h-40 bg-gray-200 rounded-lg overflow-hidden">
                   {imageUrl ? (
@@ -87,7 +87,9 @@ export default function SessionAVenir({ sessions }) {
                     </span>
                   </div>
                 )}
-                <h3 className="text-lg font-semibold text-noir break-words">{title}</h3>
+                <h3 className="text-lg font-semibold text-noir break-words">
+                  {title}
+                </h3>
                 {session.formationDescription && (
                   <p className="text-sm text-gray-600 line-clamp-2 break-words">
                     {session.formationDescription}
