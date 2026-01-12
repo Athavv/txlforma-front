@@ -5,6 +5,7 @@ import { categoryService } from "../../api/category.service";
 import { formationService } from "../../api/formation.service";
 import CatalogueHero from "../../components/catalogue/CatalogueHero";
 import CategorySection from "../../components/catalogue/CategorySection";
+import SEO from "../../components/common/SEO";
 
 export default function CataloguePage() {
   const [categories, setCategories] = useState([]);
@@ -62,6 +63,11 @@ export default function CataloguePage() {
 
   return (
     <div className="min-h-screen bg-beige">
+      <SEO
+        title="Catalogue des Formations - TXLFORMA"
+        description={`Découvrez notre catalogue complet de ${totalFormations} formations professionnelles réparties en ${totalCategories} catégories. Trouvez la formation idéale pour développer vos compétences.`}
+        keywords="catalogue formations, formations professionnelles, liste formations, formations disponibles, TXLFORMA catalogue"
+      />
       <Header />
       <div className="p-6 md:p-8">
         {/* Hero Section */}

@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Pages publiques à indexer
+Allow: /
+Allow: /catalogue
+Allow: /AboutUs
+Allow: /confidentialite
+
+# Pages privées à ne pas indexer
+Disallow: /login
+Disallow: /register
+Disallow: /profile
+Disallow: /admin
+Disallow: /formateur
+Disallow: /panier
+Disallow: /emargement
+
+# Sitemap
+Sitemap: https://txlforma.vercel.app/sitemap.xml

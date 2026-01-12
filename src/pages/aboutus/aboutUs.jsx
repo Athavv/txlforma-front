@@ -5,10 +5,16 @@ import quisommesnous from "../../assets/images/aboutUs/Salledeclasse.jpg";
 import AboutUsHero from "../../components/aboutUs/AboutUsHero.jsx";
 import Scene3D from "../../components/aboutUs/Scene3D.jsx";
 import M from "../../assets/3D/M.glb";
+import SEO from "../../components/common/SEO";
 
 export default function AboutUs() {
   return (
     <div className="min-h-screen bg-beige">
+      <SEO
+        title="À Propos de Nous - TXLFORMA"
+        description="Découvrez TXLFORMA, notre mission et nos valeurs. Explorez nos salles de classe modernes et notre environnement d'apprentissage technologique conçu pour votre réussite."
+        keywords="à propos TXLFORMA, qui sommes-nous, salles de classe, environnement d'apprentissage, formation professionnelle"
+      />
       <Header />
 
       <AboutUsHero />

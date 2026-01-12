@@ -13,6 +13,7 @@ import { panierService } from "../../api/panier.service";
 import { authService } from "../../api/auth.service";
 import { ROUTES, ROLES } from "../../constants";
 import { Link } from "react-router-dom";
+import SEO from "../../components/common/SEO";
 
 export default function FormationDetailPage() {
   const { id } = useParams();
@@ -208,6 +209,12 @@ export default function FormationDetailPage() {
 
   return (
     <div className="min-h-screen bg-fond flex flex-col">
+      <SEO
+        title={`${formation.title} - TXLFORMA`}
+        description={formation.description || `Découvrez la formation ${formation.title} sur TXLFORMA. ${formation.category?.name ? `Catégorie : ${formation.category.name}.` : ""} Inscrivez-vous dès maintenant.`}
+        keywords={`${formation.title}, formation ${formation.category?.name || ""}, TXLFORMA, formation en ligne, ${formation.category?.name || ""}`}
+        url={window.location.href}
+      />
       <Header />
       <div className="flex-1 px-5">
         <div className="p-6 md:p-8">
